@@ -14,8 +14,18 @@ func main() {
 	fmt.Printf("%q\n", year_end.FindString("2020x"))
 	fmt.Printf("%q\n", year_end.FindString("x2020"))
 
+	fmt.Println("first cap last number")
 	first_cap_last_num_re := regexp.MustCompile("^[A-Z].*[0-9]$")
 
 	fmt.Printf("%q\n", first_cap_last_num_re.MatchString("Axxx9"))
+
+	fmt.Println("first cap last symbol")
+
+	first_cap_last_symbol_re := regexp.MustCompilePOSIX("^[A-Z].*[[:punct:]]$")
+
+	fmt.Printf("%q\n", first_cap_last_symbol_re.MatchString("Axxx9"))
+	fmt.Printf("%q\n", first_cap_last_symbol_re.MatchString("Axxx$"))
+	fmt.Printf("%q\n", first_cap_last_symbol_re.MatchString("Axxx%"))
+	fmt.Printf("%q\n", first_cap_last_symbol_re.MatchString("Axxx"))
 
 }
