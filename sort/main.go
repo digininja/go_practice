@@ -8,28 +8,25 @@ type Pair struct {
 	Value int
 }
 
-type PairList struct {
-	p         []Pair
-	sortByKey bool
-	reverse   bool
+type PairListValueSort []Pair
+type PairListKeySort []Pair
+type PairList []Pair
+
+func (p PairListValueSort) Len() int      { return len(p) }
+func (p PairListValueSort) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+func (p PairListValueSort) Less(i, j int) bool {
+	return p[i].Value < p[j].Value
 }
 
-func (p PairList) Len() int      { return len(p.p) }
-func (p PairList) Swap(i, j int) { p.p[i], p.p[j] = p.p[j], p.p[i] }
-func (p PairList) Less(i, j int) bool {
-	if p.sortByKey {
-		if p.reverse {
-			return p.p[i].Key > p.p[j].Key
-		} else {
-			return p.p[i].Key < p.p[j].Key
-		}
-	} else {
-		if p.reverse {
-			return p.p[i].Value > p.p[j].Value
-		} else {
-			return p.p[i].Value < p.p[j].Value
-		}
+func (p PairListKeySort) Len() int      { return len(p) }
+func (p PairListKeySort) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+
+// If keys match then sort by values to keep things in a nice order
+func (p PairListKeySort) Less(i, j int) bool {
+	if p[i].Key == p[j].Key {
+		return (p[i].Value < p[j].Value)
 	}
+	return p[i].Key < p[j].Key
 }
 
 func main() {
@@ -46,37 +43,37 @@ func main() {
 	p2 := Pair{"abd", 124}
 	p3 := Pair{"abc", 1}
 	p4 := Pair{"xyz", 567}
+	p5 := Pair{"raw", 2}
+	p6 := Pair{"abc", 12}
 
 	var pl = PairList{}
-	pl.p = append(pl.p, p1)
-	pl.p = append(pl.p, p2)
-	pl.p = append(pl.p, p3)
-	pl.p = append(pl.p, p4)
+	pl = append(pl, p1)
+	pl = append(pl, p2)
+	pl = append(pl, p3)
+	pl = append(pl, p4)
+	pl = append(pl, p5)
+	pl = append(pl, p6)
 
 	fmt.Printf("Before\n")
-	for _, val := range pl.p {
+	for _, val := range pl {
 		fmt.Printf("%s: %d\n", val.Key, val.Value)
 	}
 
-	pl.sortByKey = false
-	sort.Sort(pl)
+	sort.Sort(PairListValueSort(pl))
 	fmt.Printf("Sort by value\n")
-	for _, val := range pl.p {
+	for _, val := range pl {
 		fmt.Printf("%s: %d\n", val.Key, val.Value)
 	}
 
-	pl.sortByKey = true
-	sort.Sort(pl)
+	sort.Sort(PairListKeySort(pl))
 	fmt.Printf("Sort by key\n")
-	for _, val := range pl.p {
+	for _, val := range pl {
 		fmt.Printf("%s: %d\n", val.Key, val.Value)
 	}
 
-	pl.sortByKey = true
-	pl.reverse = true
-	sort.Sort(pl)
+	sort.Sort(sort.Reverse(PairListKeySort(pl)))
 	fmt.Printf("Reverse sort by key\n")
-	for _, val := range pl.p {
+	for _, val := range pl {
 		fmt.Printf("%s: %d\n", val.Key, val.Value)
 	}
 }
