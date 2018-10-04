@@ -10,40 +10,31 @@ import (
 import "math/rand"
 import "fmt"
 import "time"
+import "strconv"
 
 func main() {
-	var days = []string{
-		"monday",
-		"tuesday",
-		"wednesday",
-		"thursday",
-		"friday",
-		"saturday",
-		"sunday",
-	}
-
-	var data = make(map[string]int)
+	var lengths = [10]int{}
 
 	// not crypto secure generateion of seed
 	seed := rand.NewSource(time.Now().UnixNano())
 	random := rand.New(seed)
 
-	for _, day := range days {
-		data[day] = random.Intn(50)
+	for i := 0; i < 10; i++ {
+		lengths[i] = random.Intn(50)
 	}
 
 	groupAY := plotter.Values{}
-	for _, k := range days {
-		fmt.Println("Day:", k, "Value:", data[k])
-		groupAY = append(groupAY, float64(data[k]))
+	for length, count := range lengths {
+		fmt.Println("Length:", length, "Value:", count)
+		groupAY = append(groupAY, float64(count))
 	}
 
 	p, err := plot.New()
 	if err != nil {
 		panic(err)
 	}
-	p.Title.Text = "Days of the week"
-	p.Y.Label.Text = "Number of instances"
+	p.Title.Text = "Password Length"
+	p.Y.Label.Text = "Number of characters"
 
 	w := vg.Points(10)
 
@@ -55,11 +46,19 @@ func main() {
 	barsA.Color = plotutil.Color(0)
 	barsA.Offset = -w
 
+	keys := make([]string, len(lengths))
+
+	i := 0
+	for k := range lengths {
+		keys[i] = strconv.Itoa(k)
+		i++
+	}
+
 	p.Add(barsA)
 	//p.Legend.Add("Group A", barsA)
-	p.NominalX(days...)
+	p.NominalX(keys...)
 
-	if err := p.Save(5*vg.Inch, 3*vg.Inch, "days.png"); err != nil {
+	if err := p.Save(5*vg.Inch, 3*vg.Inch, "lengths.png"); err != nil {
 		panic(err)
 	}
 }
