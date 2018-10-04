@@ -12,6 +12,7 @@ import (
 
 import "math/rand"
 import "time"
+import "fmt"
 
 type DayData struct {
 	Day   string
@@ -26,23 +27,40 @@ type TodoPageData struct {
 func main() {
 	tmpl := template.Must(template.ParseFiles("layout.html"))
 
-	// not crypto secure generateion of seed
+	var days = []string{
+		"monday",
+		"tuesday",
+		"wednesday",
+		"thursday",
+		"friday",
+		"saturday",
+		"sunday",
+	}
+
+	var data = make(map[string]int)
+
+	// not crypto secure generation of seed
 	seed := rand.NewSource(time.Now().UnixNano())
 	random := rand.New(seed)
 
-	data := TodoPageData{
+	for _, day := range days {
+		data[day] = random.Intn(50)
+	}
+	fmt.Printf("%q", data)
+
+	var aDays []DayData
+
+	for _, k := range days {
+		fmt.Println("Day:", k, "Value:", data[k])
+		aDays = append(aDays, DayData{Day: k, Count: data[k]})
+	}
+
+	fmt.Printf("%q", aDays)
+	pageData := TodoPageData{
 		PageTitle: "Days of the week",
-		Days: []DayData{
-			{Day: "Monday", Count: random.Intn(50)},
-			{Day: "Tuesday", Count: random.Intn(50)},
-			{Day: "Wednesday", Count: random.Intn(50)},
-			{Day: "Thursday", Count: random.Intn(50)},
-			{Day: "Friday", Count: random.Intn(50)},
-			{Day: "Saturday", Count: random.Intn(50)},
-			{Day: "Sunday", Count: random.Intn(50)},
-		},
+		Days:      aDays,
 	}
 	f, _ := os.Create("report.html")
 
-	tmpl.Execute(f, data)
+	tmpl.Execute(f, pageData)
 }
