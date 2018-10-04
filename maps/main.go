@@ -3,6 +3,9 @@ package main
 import "fmt"
 import "strconv"
 
+// Intereting guide
+// https://blog.golang.org/go-maps-in-action
+
 //map[int]string)
 func doit(key string, pos int, amap map[string]map[int]string) string {
 	if _, ok := amap[key]; !ok {
