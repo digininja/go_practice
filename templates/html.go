@@ -46,7 +46,6 @@ func main() {
 	for _, day := range days {
 		data[day] = random.Intn(50)
 	}
-	fmt.Printf("%q", data)
 
 	var aDays []DayData
 
@@ -55,7 +54,6 @@ func main() {
 		aDays = append(aDays, DayData{Day: k, Count: data[k]})
 	}
 
-	fmt.Printf("%q", aDays)
 	pageData := TodoPageData{
 		PageTitle: "Days of the week",
 		Days:      aDays,
