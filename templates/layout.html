@@ -1,0 +1,16 @@
+<h1>{{.PageTitle}}<h1>
+<table>
+	<thead>
+		<tr>
+		<th>Day</th>
+		<th>Count</th>
+		</tr>
+	</thead>
+	<tbody>
+    {{range .Days}}
+	<tr>
+        <td>{{.Day}}</td><td>{{.Count}}</td>
+	</tr>
+    {{end}}
+	</tbody>
+</table>
