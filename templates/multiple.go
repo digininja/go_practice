@@ -42,8 +42,12 @@ func main() {
 	dayst = daysTable()
 	fmt.Printf("%s", dayst)
 
+	dayst = emptyTable()
+	fmt.Printf("%s", dayst)
+
 	dayst = htmlFooter()
 	fmt.Printf("%s", dayst)
+
 	fmt.Printf("%s", "Done")
 	//f, _ := os.Create("report.html")
 }
@@ -73,6 +77,20 @@ func htmlHeader() *bytes.Buffer {
 	}
 
 	tmpl.Execute(buf, reportHeader)
+	return buf
+}
+func emptyTable() *bytes.Buffer {
+	tmpl := template.Must(template.ParseFiles("parts/table.html"))
+
+	var days []TableRow
+
+	pageData := Table{
+		Title: "Empty Table",
+		Rows:  days,
+	}
+
+	buf := new(bytes.Buffer)
+	tmpl.Execute(buf, pageData)
 	return buf
 }
 func daysTable() *bytes.Buffer {
