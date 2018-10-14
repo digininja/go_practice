@@ -27,3 +27,6 @@ Implementing interfaces with structs.
 
 ## charts
 Playing with creating graphs using <https://github.com/gonum/plot>
+
+## slices
+Playing with slices and bits of them

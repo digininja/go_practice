@@ -1,5 +1,9 @@
 package main
 
+import "math/rand"
+import "time"
+import "strconv"
+
 import (
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -7,14 +11,12 @@ import (
 	"gonum.org/v1/plot/vg"
 )
 
-import "math/rand"
-import "time"
-import "strconv"
-
 // Used in the plotter colours
 const RED = 0
 const GREEN = 1
 const BLUE = 2
+
+// Overall  size of the graphic
 const WIDTH = 5 * vg.Inch
 const HEIGHT = 3 * vg.Inch
 
