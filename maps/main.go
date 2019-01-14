@@ -1,7 +1,11 @@
 package main
 
 import "fmt"
+import "math/rand"
 import "strconv"
+
+// Intereting guide
+// https://blog.golang.org/go-maps-in-action
 
 //map[int]string)
 func doit(key string, pos int, amap map[string]map[int]string) string {
@@ -37,4 +41,22 @@ func main() {
 	fmt.Printf("result: %q\n", a)
 
 	fmt.Printf("map is: %q\n", mymap)
+
+	var data = make(map[string]int)
+
+	for i := 0; i < 10; i++ {
+		data[strconv.Itoa(i)] = rand.Intn(50)
+	}
+
+	keys := make([]string, len(data))
+
+	i := 0
+	for k := range data {
+		keys[i] = k
+		i++
+	}
+
+	//keys := make([]string, 0, len(data))
+	fmt.Printf("%q\n", data)
+	fmt.Printf("%q\n", keys)
 }
