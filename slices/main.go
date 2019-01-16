@@ -25,7 +25,18 @@ func main() {
 	data[8] = 8
 	data[9] = 9
 	for _, val := range data[0:uptoCap(len(data))] {
-		fmt.Printf("%d", val)
+		fmt.Printf("%d\n", val)
+	}
 
+	fmt.Println("Appending")
+
+	var moreData []int
+	moreData = append(moreData, 2)
+	moreData = append(moreData, 1)
+	moreData = append(moreData, 4)
+	moreData = append(moreData, 3)
+
+	for _, val := range moreData[:] {
+		fmt.Printf("%d\n", val)
 	}
 }
