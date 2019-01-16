@@ -6,9 +6,11 @@ import "net"
 func main() {
 	ifaces, _ := net.Interfaces()
 	// handle err
+	var ips []string
+
 	for _, i := range ifaces {
 		addrs, _ := i.Addrs()
-		// handle err
+
 		for _, addr := range addrs {
 			var ip net.IP
 			switch v := addr.(type) {
@@ -20,8 +22,23 @@ func main() {
 				ip = v.IP
 			}
 			if ip.String() != "127.0.0.1" {
-				fmt.Printf("The IP is: %s\n", ip)
+				ips = append(ips, ip.String())
 			}
+		}
+	}
+
+	fmt.Println("IPs found")
+	for _, val := range ips[:] {
+		fmt.Printf("%s\n", val)
+	}
+
+	if len(ips) == 0 {
+		fmt.Println("No IPs found")
+	} else {
+		if len(ips) > 1 {
+			fmt.Println("More than one IPs found")
+		} else {
+			fmt.Println("Just one IP found")
 		}
 	}
 }
