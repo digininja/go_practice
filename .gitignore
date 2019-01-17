@@ -17,3 +17,5 @@
 # binaries
 multiple_binaries/client/client
 multiple_binaries/server/server
+
+test.db
