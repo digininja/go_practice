@@ -1,0 +1,30 @@
+{{set . "title" "Home"}}
+{{template "header.html" .}}
+
+<header class="jumbotron" style="background-color:#A9F16C">
+  <div class="container">
+    <div class="row">
+      <h1>It works!</h1>
+      <p></p>
+    </div>
+  </div>
+</header>
+
+<p><a href="/robin?third=three">Page with one parameter</a></p>
+<p><a href="/robin?first=111&third=three">Page with two parameters</a></p>
+
+<p><a href="/@tests">Test Suite</a></p>
+
+<div class="container">
+  <div class="row">
+    <div class="span6">
+      {{template "flash.html" .}}
+		<form action="/App/Hello" method="GET">
+			<input type="text" name="myName" /><br/>
+			<input type="submit" value="Say hello!" />
+		</form>
+    </div>
+  </div>
+</div>
+
+{{template "footer.html" .}}
