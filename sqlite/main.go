@@ -49,12 +49,9 @@ func getClient(uuid string) Client {
 		log.Fatal(err)
 	}
 
-	if row_count == 0 {
-		return client
-	} else {
-		if row_count > 1 {
-			log.Fatal("Multiple hits, this shouldn't happen")
-		}
+	if row_count > 1 {
+		// Should never get here as uuid is a primary key
+		log.Fatal("Multiple hits, this shouldn't happen")
 	}
 
 	return client
@@ -82,5 +79,18 @@ func main() {
 
 	createDatabase()
 	getClients()
-	getClient("461f68d2-d89f-489d-aed7-451851977a18")
+	client := getClient("461f68d2-d89f-489d-aed7-451851977a18")
+
+	if client == (Client{}) {
+		fmt.Printf("No records found\n")
+	} else {
+		fmt.Printf("uuid %s, hostname %s, ip %s\n", client.uuid, client.hostname, client.ip)
+	}
+	client = getClient("68d2-d89f-489d-aed7-451851977a18")
+
+	if client == (Client{}) {
+		fmt.Printf("No records found\n")
+	} else {
+		fmt.Printf("uuid %s, hostname %s, ip %s\n", client.uuid, client.hostname, client.ip)
+	}
 }
