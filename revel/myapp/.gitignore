@@ -1,0 +1,8 @@
+test-results/
+tmp/
+routes/
+
+revel/revel
+
+.idea/
+*.iml
