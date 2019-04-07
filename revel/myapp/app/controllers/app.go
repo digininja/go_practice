@@ -12,6 +12,17 @@ func (c App) Index() revel.Result {
 	return c.Render()
 }
 
+func (c App) FormGet() revel.Result {
+	c.ViewArgs["method"] = "get"
+	return c.RenderTemplate("Form.html")
+}
+
+func (c App) FormPost(name string, password string) revel.Result {
+	c.ViewArgs["method"] = "post"
+	c.ViewArgs["username"] = "robin"
+	return c.RenderTemplate("Form.html")
+}
+
 func (c App) Param(id int, str string) revel.Result {
 
 	/*

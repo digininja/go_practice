@@ -17,6 +17,9 @@ GET		/noslash								App.NoSlash
 GET		/param/:id/:str							App.Param
 GET		/param/:id/								App.Param
 
+GET		/form				App.FormGet
+POST	/form				App.FormPost
+
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

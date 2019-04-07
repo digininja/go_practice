@@ -1,0 +1,12 @@
+{{set . "title" "Home"}}
+{{template "header.html" .}}
+
+<p>Method: {{.method}}</p>
+
+<form method="post" action="/form">
+	<label for="username">Username:</label> <input id="username" id="username" type="text" value="{{.username}}" /><br />
+	<label for="password">Password:</label> <input id="password" id="password" type="password" value="" /><br />
+	<input type="submit" value="Do Post" />
+</form>
+
+{{template "footer.html" .}}
