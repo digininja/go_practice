@@ -11,6 +11,11 @@ GET     /                                       App.Index
 GET     /App/Hello								App.Hello
 GET     /robin									App.Robin
 
+GET		/slash/									App.Slash
+GET		/noslash								App.NoSlash
+
+GET		/param/:id								App.Param
+
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

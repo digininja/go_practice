@@ -12,6 +12,41 @@ func (c App) Index() revel.Result {
 	return c.Render()
 }
 
+func (c App) Param(id int) revel.Result {
+
+	/*
+	   Two other ways to pull the parameter out of the query string
+
+	   var id string = c.Params.Get("id")
+
+	   Or
+
+	   var id int
+	   c.Params.Bind(&id, "id")
+	*/
+
+	c.Validation.Required(id).Message("ID is required!")
+	//c.Validation.MinSize(id, 3).Message("Name is not long enough!")
+
+	if c.Validation.HasErrors() {
+		// Sets the flash parameter `error` which will be sent by a flash cookie
+		c.Flash.Error("Something went wrong!")
+		// Keep the validation error from above by setting a flash cookie
+		c.Validation.Keep()
+		// Copies all given parameters (URL, Form, Multipart) to the flash cookie
+		c.FlashParams()
+	}
+	return c.Render(id)
+}
+
+func (c App) NoSlash() revel.Result {
+	return c.Render()
+}
+
+func (c App) Slash() revel.Result {
+	return c.Render()
+}
+
 func (c App) Hello(myName string) revel.Result {
 	// Explanation of Flash
 	// https://revel.github.io/manual/sessionflash.html#flash
