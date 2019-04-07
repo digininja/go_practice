@@ -2,7 +2,22 @@
 {{template "header.html" .}}
 
 <h1>Page with an ID</h1>
+
+{{if or .errors .flash.error}}
+<div class="alert alert-danger">
+	{{if .flash.error}}
+		{{.flash.error}}
+	{{end}}
+	<ul style="margin-top:10px;">
+		{{range .errors}}
+			<li>{{.}}</li>
+		{{end}}
+	</ul>
+</div>
+{{end}}
+
 <p>The ID is {{.id}}</p>
-<a href="/">Back to form</a>
+<p>The string is {{.str}}</p>
+<a href="/">Back to home</a>
 
 {{template "footer.html" .}}

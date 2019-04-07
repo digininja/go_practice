@@ -14,7 +14,8 @@ GET     /robin									App.Robin
 GET		/slash/									App.Slash
 GET		/noslash								App.NoSlash
 
-GET		/param/:id								App.Param
+GET		/param/:id/:str							App.Param
+GET		/param/:id/								App.Param
 
 
 # Ignore favicon requests
