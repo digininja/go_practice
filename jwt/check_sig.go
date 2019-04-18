@@ -29,7 +29,15 @@ func main() {
 
 	//	ExampleParse_hmac(token)
 	fmt.Printf("token: %s\n", token)
-	ParseJWT("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJiYXIiLCJ4Zm9vIjoiYmFyIn0.uE9pOf9a6USdWHmDx7lxcWrdpjndc0oFUNuVR5GXKac")
+	success, message := ParseJWT("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsZXZlbCI6InVzZXIiLCJ1c2VyIjoic2lkIn0.u1v8W3-6vmnpnU1foWRNTChnzuhWRMWjtR5NalDYQKs")
+
+	if success {
+		fmt.Printf("Login success\n")
+		fmt.Printf("Message: %s\n", message)
+	} else {
+		fmt.Printf("Login failed\n")
+		fmt.Printf("Message: %s\n", message)
+	}
 	// also works with a d on the end
 	// ExampleParse_hmac("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJiYXIiLCJ4Zm9vIjoiYmFyIn0.uE9pOf9a6USdWHmDx7lxcWrdpjndc0oFUNuVR5GXKLc")
 }
@@ -39,14 +47,14 @@ func ExampleNew_hmac() (string, error) {
 	// Create a new token object, specifying signing method and the claims
 	// you would like it to contain.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"foo":  "bar",
-		"xfoo": "bar",
+		"user":  "sid",
+		"level": "user",
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
 	tokenString, err := token.SignedString(hmacSampleSecret)
 
-	fmt.Printf("The newly created token is %s.\n", tokenString)
+	fmt.Printf("The newly created token is %s\n", tokenString)
 
 	return tokenString, err
 }
@@ -62,8 +70,11 @@ func getToken(token *jwt.Token) (interface{}, error) {
 }
 
 // Example parsing and validating a token using the HMAC signing method
-func ParseJWT(tokenString string) {
+func ParseJWT(tokenString string) (bool, string) {
 	fmt.Println("In checker")
+
+	var success bool = false
+	var message string = ""
 
 	token, err := jwt.Parse(tokenString, getToken)
 
@@ -78,6 +89,9 @@ func ParseJWT(tokenString string) {
 
 			fmt.Printf("Claims - Foo: %s\n\n", claims["foo"])
 			//fmt.Printf("Foo: %s\nnbf: %f\n", claims["foo"], claims["nbf"])
+
+			message = fmt.Sprintf("Welcome %s (%s)", claims["user"], claims["level"])
+			success = true
 		}
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
 		// This is from <https://godoc.org/github.com/dgrijalva/jwt-go#pkg-constants>
@@ -89,7 +103,7 @@ func ParseJWT(tokenString string) {
 			newTokenString, _ := newToken.SignedString(hmacSampleSecret)
 
 			newParsedToken, _ := jwt.Parse(newTokenString, getToken)
-			fmt.Printf("The new signature is: %s\n", newParsedToken.Signature)
+			message = fmt.Sprintf("The new signature is: %s\n", newParsedToken.Signature)
 		} else if ve.Errors&jwt.ValidationErrorMalformed != 0 {
 			fmt.Println("That's not even a token")
 		} else {
@@ -99,5 +113,5 @@ func ParseJWT(tokenString string) {
 		fmt.Printf("There was an error parsing the token: %u", err)
 	}
 
-	// Output: bar 1.4444784e+09
+	return success, message
 }
