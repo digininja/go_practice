@@ -5,7 +5,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"io/ioutil"
 	"log"
-	"time"
+	"strings"
 )
 
 // For HMAC signing method, the key can be any []byte. It is recommended to generate
@@ -27,8 +27,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ExampleParse_hmac(token)
-	BadValidate(token)
+	//	ExampleParse_hmac(token)
+	fmt.Printf("token: %s\n", token)
+	ParseJWT("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJiYXIiLCJ4Zm9vIjoiYmFyIn0.uE9pOf9a6USdWHmDx7lxcWrdpjndc0oFUNuVR5GXKac")
+	// also works with a d on the end
+	// ExampleParse_hmac("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJiYXIiLCJ4Zm9vIjoiYmFyIn0.uE9pOf9a6USdWHmDx7lxcWrdpjndc0oFUNuVR5GXKLc")
 }
 
 // Example creating, signing, and encoding a JWT token using the HMAC signing method
@@ -36,16 +39,14 @@ func ExampleNew_hmac() (string, error) {
 	// Create a new token object, specifying signing method and the claims
 	// you would like it to contain.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"foo":    "bar",
-		"nbfx":   time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
-		"expold": time.Now().Add(time.Second * 3600 * 24).Unix(),
-		"exp":    time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
+		"foo":  "bar",
+		"xfoo": "bar",
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
 	tokenString, err := token.SignedString(hmacSampleSecret)
 
-	fmt.Printf("The token is %s.\n", tokenString)
+	fmt.Printf("The newly created token is %s.\n", tokenString)
 
 	return tokenString, err
 }
@@ -61,46 +62,42 @@ func getToken(token *jwt.Token) (interface{}, error) {
 }
 
 // Example parsing and validating a token using the HMAC signing method
-func ExampleParse_hmac(tokenString string) {
-	fmt.Println("In good checker")
-
-	// Parse takes the token string and a function for looking up the key. The latter is especially
-	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
-	// head of the token to identify which key to use, but the parsed token (head and claims) is provided
-	// to the callback, providing flexibility.
-
-	// getToken is a function, not a variable and not a call to a function
+func ParseJWT(tokenString string) {
+	fmt.Println("In checker")
 
 	token, err := jwt.Parse(tokenString, getToken)
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Printf("Foo: %s\nnbf: %f\n", claims["foo"], claims["nbf"])
+	if token.Valid {
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+
+			fmt.Printf("The token passed in is: %s\n", tokenString)
+			fmt.Printf("Raw: %s\n", token.Raw)
+			fmt.Printf("Claims: %u\n", token.Claims)
+			payload := strings.Split(token.Raw, ".")[1]
+			fmt.Printf("Payload: %s\n", payload)
+
+			fmt.Printf("Claims - Foo: %s\n\n", claims["foo"])
+			//fmt.Printf("Foo: %s\nnbf: %f\n", claims["foo"], claims["nbf"])
+		}
+	} else if ve, ok := err.(*jwt.ValidationError); ok {
+		// This is from <https://godoc.org/github.com/dgrijalva/jwt-go#pkg-constants>
+		if ve.Errors&jwt.ValidationErrorSignatureInvalid != 0 {
+			fmt.Println("Invalid signature")
+			fmt.Printf("The signature submitted is: %s\n", token.Signature)
+
+			newToken := jwt.NewWithClaims(jwt.SigningMethodHS256, token.Claims)
+			newTokenString, _ := newToken.SignedString(hmacSampleSecret)
+
+			newParsedToken, _ := jwt.Parse(newTokenString, getToken)
+			fmt.Printf("The new signature is: %s\n", newParsedToken.Signature)
+		} else if ve.Errors&jwt.ValidationErrorMalformed != 0 {
+			fmt.Println("That's not even a token")
+		} else {
+			fmt.Println("Couldn't handle this token:", err)
+		}
 	} else {
-		fmt.Println(err)
+		fmt.Printf("There was an error parsing the token: %u", err)
 	}
 
 	// Output: bar 1.4444784e+09
-}
-
-// Override time value for tests.  Restore default value after.
-func at(t time.Time, f func()) {
-	jwt.TimeFunc = func() time.Time {
-		return t
-	}
-	f()
-	jwt.TimeFunc = time.Now
-}
-
-func BadValidate(tokenString string) {
-	fmt.Println("In bad checker")
-	// Override time so we don't care about expired time
-	at(time.Unix(0, 0), func() {
-		token, err := jwt.Parse(tokenString, getToken)
-
-		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			fmt.Printf("%v %v\n", claims["foo"], claims["exp"])
-		} else {
-			fmt.Println(err)
-		}
-	})
 }
