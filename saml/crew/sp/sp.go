@@ -29,7 +29,7 @@ func main() {
 		panic(err) // TODO handle error
 	}
 
-	idpMetadataURL, err := url.Parse("https://www.testshib.org/metadata/testshib-providers.xml")
+	idpMetadataURL, err := url.Parse("https://samltest.id/saml/idp")
 	if err != nil {
 		panic(err) // TODO handle error
 	}
@@ -39,15 +39,18 @@ func main() {
 		panic(err) // TODO handle error
 	}
 
+	log.Println("Creating the SP")
 	samlSP, _ := samlsp.New(samlsp.Options{
 		IDPMetadataURL: idpMetadataURL,
 		URL:            *rootURL,
 		Key:            keyPair.PrivateKey.(*rsa.PrivateKey),
 		Certificate:    keyPair.Leaf,
 	})
+	log.Println("Created")
 	app := http.HandlerFunc(hello)
 	http.Handle("/hello", samlSP.RequireAccount(app))
 	http.Handle("/saml/", samlSP)
-	http.ListenAndServe(":8001", nil)
+	log.Println("Starting the listener")
+	http.ListenAndServe(":8000", nil)
 	log.Printf("started the app")
 }

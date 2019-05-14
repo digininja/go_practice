@@ -45,6 +45,7 @@ rdKNuCZhiaE2XD9L/O9KP1fh5bfEcKwazQ23EvpJHBMm8BGC+/YZNw==
 	return k
 }()
 
+// Alternative to do it with hardcoded certificate
 var cert = func() *x509.Certificate {
 	b, _ := pem.Decode([]byte(`-----BEGIN CERTIFICATE-----
 MIIDBzCCAe+gAwIBAgIJAPr/Mrlc8EGhMA0GCSqGSIb3DQEBBQUAMBoxGDAWBgNV
@@ -68,6 +69,32 @@ UzreO96WzlBBMtY=
 	c, _ := x509.ParseCertificate(b.Bytes)
 	return c
 }()
+
+/*
+var cert2 = func() *x509.Certificate {
+	certCerFile, err := os.Open("certificate.pem")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	derBytes := make([]byte, 1000)
+
+	count, err := certCerFile.Read(derBytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	certCerFile.Close()
+
+	// trim the bytes to actual length in call
+	cert, err := x509.ParseCertificate(derBytes[0:count])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return cert
+}()
+*/
 
 func main() {
 	logr := logger.DefaultLogger
