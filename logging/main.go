@@ -1,15 +1,19 @@
 package main
 
 import "fmt"
-import log "github.com/sirupsen/logrus"
+import "log"
+
+//import log "github.com/sirupsen/logrus"
 
 func main() {
 	fmt.Println("Begin...")
 	log.SetLevel(log.DebugLevel)
-	log.SetFormatter(&log.TextFormatter{
-		DisableColors: true,
-		FullTimestamp: true,
-	})
+	/*
+		log.SetFormatter(&log.TextFormatter{
+			DisableColors: true,
+			FullTimestamp: true,
+		})
+	*/
 	log.SetReportCaller(true)
 	log.Printf("Print level message: %d", 1)
 	log.Infof("Info level message: %d", 1)

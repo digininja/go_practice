@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"gonum.org/v1/plot"
-	"gonum.org/v1/plot/internal/cmpimg"
+	//	"gonum.org/v1/plot/internal/cmpimg" // commenting this out will probably break things but allows the dependencies to load
 	"gonum.org/v1/plot/vg"
 	"gonum.org/v1/plot/vg/draw"
 )
