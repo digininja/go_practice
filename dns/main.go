@@ -1,5 +1,9 @@
 package main
 
+/*
+http://www.golangprograms.com/find-dns-records-programmatically.html
+*/
+
 import (
 	"context"
 	"fmt"
@@ -9,7 +13,7 @@ import (
 
 var Nameserver = "8.8.8.8"
 
-func GoogleDNSDialer(ctx context.Context, network, address string) (net.Conn, error) {
+func CustomDialer(ctx context.Context, network, address string) (net.Conn, error) {
 	d := net.Dialer{}
 
 	return d.DialContext(ctx, "udp", net.JoinHostPort(Nameserver, "53"))
@@ -19,7 +23,7 @@ func customResolverViaSeparateDialer(domain string) {
 	fmt.Println("customResolverViaSeparateDialer")
 	r := net.Resolver{
 		PreferGo: true,
-		Dial:     GoogleDNSDialer,
+		Dial:     CustomDialer,
 	}
 	ctx := context.Background()
 	ips, err := r.LookupIPAddr(ctx, domain)
@@ -77,7 +81,13 @@ func systemResolver(domain string) {
 func main() {
 	domain := "microsoft.com"
 
-	customResolverViaDialerBuiltIn(domain)
-	customResolverViaSeparateDialer(domain)
+	nameserver, _ := net.LookupNS(domain)
+	for _, ns := range nameserver {
+		fmt.Printf("Looking at name server: %s\n", ns.Host)
+		Nameserver = ns.Host
+
+		customResolverViaDialerBuiltIn(domain)
+		customResolverViaSeparateDialer(domain)
+	}
 	systemResolver(domain)
 }
