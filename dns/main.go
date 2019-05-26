@@ -2,6 +2,8 @@ package main
 
 /*
 http://www.golangprograms.com/find-dns-records-programmatically.html
+
+https://golang.org/pkg/net/
 */
 
 import (
