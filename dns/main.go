@@ -80,6 +80,20 @@ func systemResolver(domain string) {
 	fmt.Println()
 }
 
+func systemResolverCNAME(domain string) {
+	fmt.Println("systemResolver")
+	ips, err := net.LookupCNAME(domain)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not get IPs: %v\n", err)
+		os.Exit(1)
+	}
+	for _, ip := range ips {
+		fmt.Printf("%s. IN A %s\n", domain, ip)
+	}
+
+	fmt.Println()
+}
+
 func main() {
 	domain := "microsoft.com"
 
@@ -92,4 +106,7 @@ func main() {
 		customResolverViaSeparateDialer(domain)
 	}
 	systemResolver(domain)
+	systemResolver("staging.zonetransfer.me")
+	Nameserver = "nsztm1.digi.ninja"
+	customResolverViaSeparateDialer("staging.zonetransfer.me")
 }
