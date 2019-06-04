@@ -25,3 +25,5 @@ Then go to here to upload the file:
 ## Vulnerabilities
 
 <https://github.com/yogisec/VulnerableSAMLApp>
+
+<https://medium.com/@sagarag/reloading-saml-saml-basics-b8999995c73e>
