@@ -21,3 +21,7 @@ curl localhost:8000/saml/metadata > /tmp/digi.xml
 Then go to here to upload the file:
 
 <https://samltest.id/upload.php>
+
+## Vulnerabilities
+
+<https://github.com/yogisec/VulnerableSAMLApp>
