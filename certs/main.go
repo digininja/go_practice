@@ -63,6 +63,7 @@ func LoadX509KeyPair(certFile, keyFile string) (*x509.Certificate, *x509.Certifi
 }
 
 func main() {
+	log.SetLevel(log.DebugLevel)
 	ca, cert, key := LoadX509KeyPair("cert.pem", "private.key")
 
 	fmt.Println("Certificate Stuff")
