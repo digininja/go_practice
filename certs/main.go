@@ -66,7 +66,7 @@ func main() {
 	ca, cert, key := LoadX509KeyPair("cert.pem", "private.key")
 
 	fmt.Println("Certificate Stuff")
-	// https://golang.org/pkg/crypto/x509/
+	// https://golang.org/pkg/crypto/x509/#Certificate
 	fmt.Printf("CA DNS Names%s\n", ca.DNSNames)
 	fmt.Println("Certificate DNS Names")
 	for _, name := range cert.DNSNames {
