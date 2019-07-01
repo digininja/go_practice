@@ -1,24 +1,55 @@
 package main
 
 import "fmt"
-import "log"
 
-//import log "github.com/sirupsen/logrus"
+//import "log"
+
+import log "github.com/sirupsen/logrus"
 
 func main() {
 	fmt.Println("Begin...")
-	log.SetLevel(log.DebugLevel)
+	/*
+		Valid levels
+
+		panic,
+		fatal,
+		error, 2
+		warning, 3
+		info, 4
+		debug, 5
+		trace, 6
+
+		Print is at the same level as Info
+	*/
+
+	levelStrings := []log.Level{
+		log.ErrorLevel,
+		log.WarnLevel,
+		log.InfoLevel,
+		log.DebugLevel,
+		log.TraceLevel,
+	}
+
 	/*
 		log.SetFormatter(&log.TextFormatter{
 			DisableColors: true,
 			FullTimestamp: true,
 		})
 	*/
+
 	log.SetReportCaller(true)
-	log.Printf("Print level message: %d", 1)
-	log.Infof("Info level message: %d", 1)
-	log.Warningf("Print level message: %d", 1)
-	log.Debugf("Debug level message: %d", 1)
+	for _, level := range levelStrings {
+		log.SetLevel(level)
+		fmt.Printf("Log level: %u\n", level)
+		log.Errorf("Error level message: %d", 1)
+		log.Warningf("Warning level message: %d", 1)
+		log.Infof("Info level message: %d", 1)
+		log.Debugf("Debug level message: %d", 1)
+		log.Tracef("Trace level message: %d", 1)
+		log.Printf("Print level message: %d", 1)
+		fmt.Println()
+		fmt.Println()
+	}
 
 	log.Trace("Something very low level.")
 	log.Debug("Useful debugging information.")
