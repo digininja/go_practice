@@ -38,7 +38,7 @@ func main() {
 
 	b = []byte(`[{"Other":"Blah","Name":"Alice","Body":"Hello","Time":1294706395881547000},{"Other":"Blah","Name":"Bob","Body":"Hello","Time":1294706395881547000}]`)
 
-	messages := make([]Message, 0)
+	var messages []Message
 	err = json.Unmarshal(b, &messages)
 
 	if err != nil {
