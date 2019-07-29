@@ -1,5 +1,11 @@
 package main
 
+/*
+This is a good reference for running commands:
+
+https://nathanleclaire.com/blog/2014/12/29/shelled-out-commands-in-golang/
+*/
+
 import (
 	"bufio"
 	"fmt"
