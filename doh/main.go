@@ -1,5 +1,10 @@
 package main
 
+/*
+ From here:
+ https://github.com/likexian/doh-go
+*/
+
 import "fmt"
 import (
 	"context"
