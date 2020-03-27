@@ -30,3 +30,6 @@ Playing with creating graphs using <https://github.com/gonum/plot>
 
 ## slices
 Playing with slices and bits of them
+
+## imports
+Examples of how to import code from other files, both in the same directory and a different directory.
