@@ -1,4 +1,9 @@
+# Vim swap files
+.*swp
+.*swq
+
 # Binaries for programs and plugins
+main
 *.exe
 *.exe~
 *.dll
