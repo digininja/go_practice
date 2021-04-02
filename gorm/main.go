@@ -47,6 +47,32 @@ func (p *Product) SetDatabase(db *gorm.DB) {
 	p.db = db
 }
 
+func (p *Product) create(uuid string) error {
+	created := false
+	for createAttempt := 0; createAttempt < 3; createAttempt++ {
+		// Create
+		p.UUID = uuid
+		p.Code = "a1"
+		p.Price = 122
+		p.Status = "processing"
+		result := p.db.Create(&p)
+		if result.Error != nil {
+			log.Println("error doing insert")
+		} else {
+			log.Println("1 created")
+			created = true
+			break
+		}
+	}
+
+	if !created {
+		log.Printf("Could not create new item")
+		return errors.New("Could not create new item")
+	}
+	log.Println("Item created")
+	return nil
+}
+
 func (p *Product) load(uuid string) error {
 	log.Printf("In load, trying to load product UUID %s", uuid)
 	result := p.db.First(&p, "uuid = ?", uuid)
@@ -86,19 +112,19 @@ func main() {
 		panic("failed to connect database")
 	}
 
-	// Create
 	uuid := uuid.NewString()
+
 	prod := NewProduct(db)
-	prod.UUID = uuid
-	prod.Code = "a1"
-	prod.Price = 122
-	prod.Status = "processing"
-	result := db.Create(&prod)
-	if result.Error != nil {
-		log.Println("error doing insert")
-		return
+	err = prod.create(uuid)
+	if err != nil {
+		log.Printf("create function failed")
 	}
-	log.Println("Product inserted")
+
+	prod1 := NewProduct(db)
+	err = prod1.create(uuid)
+	if err != nil {
+		log.Printf("create function failed")
+	}
 
 	//db.Create(&Product{Code: "D45", Price: 300})
 
