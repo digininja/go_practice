@@ -6,8 +6,20 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
-	"reflect"
 )
+
+func ConnectDB() (*gorm.DB, error) {
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	if err != nil {
+		log.Printf("Failed to connect to database")
+		return nil, err
+	}
+	// defer db.Close()
+
+	// Migrate the schema
+	db.AutoMigrate(&Product{})
+	return db, nil
+}
 
 type Product struct {
 	gorm.Model
@@ -18,17 +30,26 @@ type Product struct {
 	Status string
 	// sqlite3 doesn't have enums, but for when I need them, this is how to do it
 	// Status string `gorm:"type:enum('unknown', 'processing', 'complete', 'error')"`
+
+	// Database connection string, maybe shouldn't be in here, not sure
+	db *gorm.DB `gorm:"-"`
 }
 
-func NewProduct() Product {
+func NewProduct(db *gorm.DB) Product {
 	product := Product{}
+	product.db = db
 	product.Count = 0
+	product.Status = "processing"
 	return product
 }
 
-func (p *Product) load(uuid string, db *gorm.DB) error {
+func (p *Product) SetDatabase(db *gorm.DB) {
+	p.db = db
+}
+
+func (p *Product) load(uuid string) error {
 	log.Printf("In load, trying to load product UUID %s", uuid)
-	result := db.First(&p, "uuid = ?", uuid)
+	result := p.db.First(&p, "uuid = ?", uuid)
 	log.Printf("Rows %d", result.RowsAffected)
 
 	if result.Error != nil {
@@ -45,24 +66,29 @@ func (p *Product) load(uuid string, db *gorm.DB) error {
 	return nil
 }
 
-var db *gorm.DB
-
 func main() {
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	var db *gorm.DB
+	var err error
+
+	/*
+		db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+		if err != nil {
+			panic("failed to connect database")
+		}
+		// defer db.Close()
+
+		// Migrate the schema
+		db.AutoMigrate(&Product{})
+	*/
+
+	db, err = ConnectDB()
 	if err != nil {
 		panic("failed to connect database")
 	}
-	// defer db.Close()
-
-	log.Println("The type of db is")
-	log.Println(reflect.TypeOf(db))
-
-	// Migrate the schema
-	db.AutoMigrate(&Product{})
 
 	// Create
 	uuid := uuid.NewString()
-	prod := NewProduct()
+	prod := NewProduct(db)
 	prod.UUID = uuid
 	prod.Code = "a1"
 	prod.Price = 122
@@ -78,12 +104,18 @@ func main() {
 
 	// Read
 	var product Product
+	product.SetDatabase(db)
 	var products []Product
 
-	err1 := product.load(uuid, db)
-	if err1 != nil {
+	err = product.load(uuid)
+	if err != nil {
 		log.Println("There was a problem loading the product")
-		return
+	}
+	log.Printf("Product reloaded with UUID %s", product.UUID)
+
+	err = product.load(uuid + "x")
+	if err != nil {
+		log.Println("There was a problem loading the product with invalid UUID")
 	}
 	log.Printf("Product reloaded with UUID %s", product.UUID)
 
