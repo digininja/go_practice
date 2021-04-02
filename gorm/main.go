@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -12,10 +11,13 @@ import (
 
 type Product struct {
 	gorm.Model
-	Code  string
-	Price uint
-	UUID  string `gorm:"unique;not null;type:varchar(100);default:null"`
-	Count uint
+	Code   string
+	Price  uint
+	UUID   string `gorm:"unique;not null;type:varchar(100);default:null"`
+	Count  uint
+	Status string
+	// sqlite3 doesn't have enums, but for when I need them, this is how to do it
+	// Status string `gorm:"type:enum('unknown', 'processing', 'complete', 'error')"`
 }
 
 func NewProduct() Product {
@@ -31,13 +33,13 @@ func (p *Product) load(uuid string, db *gorm.DB) error {
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			fmt.Println("UUID Not Found")
+			log.Println("UUID Not Found")
 		} else {
-			fmt.Printf("Other error: %s\n", result.Error)
+			log.Printf("Other error: %s\n", result.Error)
 		}
 		return result.Error
 	} else {
-		fmt.Println("Record Found")
+		log.Println("Record Found")
 	}
 	log.Printf("In load, product UUID is %s", p.UUID)
 	return nil
@@ -64,12 +66,13 @@ func main() {
 	prod.UUID = uuid
 	prod.Code = "a1"
 	prod.Price = 122
+	prod.Status = "processing"
 	result := db.Create(&prod)
 	if result.Error != nil {
-		fmt.Println("error doing insert")
+		log.Println("error doing insert")
 		return
 	}
-	fmt.Println("Product inserted")
+	log.Println("Product inserted")
 
 	//db.Create(&Product{Code: "D45", Price: 300})
 
@@ -79,13 +82,16 @@ func main() {
 
 	err1 := product.load(uuid, db)
 	if err1 != nil {
-		fmt.Println("There was a problem loading the product")
+		log.Println("There was a problem loading the product")
 		return
 	}
 	log.Printf("Product reloaded with UUID %s", product.UUID)
 
 	for count := 0; count < 5; count++ {
 		db.Model(&product).Update("Count", product.Count+1)
+		if count == 4 {
+			db.Model(&product).Update("Status", "complete")
+		}
 		log.Printf("The count for %s is %d", product.UUID, product.Count)
 	}
 
@@ -94,9 +100,9 @@ func main() {
 	db.Find(&products, "code = ?", "D42") // find product with code D42
 
 	for _, p := range products {
-		fmt.Printf("ID: %d\n", p.ID)
-		fmt.Printf("Price: %d\n", p.Price)
-		fmt.Printf("Code: %s\n", p.Code)
+		log.Printf("ID: %d\n", p.ID)
+		log.Printf("Price: %d\n", p.Price)
+		log.Printf("Code: %s\n", p.Code)
 		db.Model(&p).Update("Price", p.Price+1)
 	}
 
