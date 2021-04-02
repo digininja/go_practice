@@ -8,6 +8,8 @@
 
 <https://gorm.io/>
 
+[The official documentation](https://gorm.io/docs/query.html)
+
 ## Others
 
 This gives info on how to share a connection over multiple packages:
