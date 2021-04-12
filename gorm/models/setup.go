@@ -17,6 +17,8 @@ func ConnectDatabase() {
 	}
 
 	database.AutoMigrate(&URL{})
+	database.AutoMigrate(&Order{})
+	database.AutoMigrate(&Item{})
 
 	DB = database
 }
