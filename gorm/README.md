@@ -4,6 +4,8 @@
 
 <https://tutorialedge.net/golang/golang-orm-tutorial/>
 
+This is what I used to get the MVC stuff working:
+
 <https://blog.logrocket.com/how-to-build-a-rest-api-with-golang-using-gin-and-gorm/>
 
 <https://gorm.io/>
