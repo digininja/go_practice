@@ -29,25 +29,24 @@ func main() {
 		controllers.CreateURL("https://digi.ninja")
 	}
 
-	log.Printf("Load an order by ID and get its items")
+	log.Printf("Load an order with ID 2 and get its items")
 	var order models.Order
 	models.DB.First(&order, 2)
-	var retrievedItems []models.Item
-	models.DB.Where("order_id = ?", order.ID).Find(&retrievedItems)
+	retrievedItems := controllers.GetItems(order.ID)
+	log.Printf("Order name: %s", order.Name)
 
 	for _, item := range retrievedItems {
-		log.Printf("Item: %s - Price: %d\n", item.Name, item.Price)
+		log.Printf("\tItem: %s - Price: %d\n", item.Name, item.Price)
 	}
 
 	log.Printf("Done")
 
+	// From here https://gorm.io/docs/query.html
 	log.Printf("Loading all orders ordered by creation date")
-	var orders []models.Order
-	models.DB.Order("created_at").Find(&orders)
+	orders := controllers.GetAllOrders()
 
 	for _, order := range orders {
-		var retrievedItems []models.Item
-		models.DB.Where("order_id = ?", order.ID).Find(&retrievedItems)
+		retrievedItems := controllers.GetItems(order.ID)
 		log.Printf("Order name: %s", order.Name)
 		for _, item := range retrievedItems {
 			log.Printf("\tItem: %s - Price: %d\n", item.Name, item.Price)
@@ -55,19 +54,20 @@ func main() {
 	}
 	log.Printf("Done")
 
-	log.Printf("Loading two orders reverse ordered by creation date")
+	numberOfOrders := 2
+	log.Printf("Loading %d orders reverse ordered by creation date", numberOfOrders)
 
-	models.DB.Limit(2).Order("created_at desc").Find(&orders)
+	orders = controllers.GetRecentOrders(numberOfOrders)
 
 	for _, order := range orders {
-		var retrievedItems []models.Item
-		models.DB.Where("order_id = ?", order.ID).Find(&retrievedItems)
+		retrievedItems := controllers.GetItems(order.ID)
 		log.Printf("Order name: %s", order.Name)
 		for _, item := range retrievedItems {
 			log.Printf("\tItem: %s - Price: %d\n", item.Name, item.Price)
 		}
 	}
 	log.Printf("Done")
+	return
 
 	urls := controllers.GetURLs()
 
