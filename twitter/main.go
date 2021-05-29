@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"regexp"
+	"strings"
 
 	"github.com/dghubble/go-twitter/twitter"
 
@@ -17,15 +19,22 @@ func main() {
 	flags := struct {
 		consumerKey    string
 		consumerSecret string
+		term           string
+		records        int
 	}{}
 
 	flag.StringVar(&flags.consumerKey, "consumer-key", "", "Twitter Consumer Key")
 	flag.StringVar(&flags.consumerSecret, "consumer-secret", "", "Twitter Consumer Secret")
+	flag.StringVar(&flags.term, "term", "", "Search Term")
+	flag.IntVar(&flags.records, "records", 5, "Number of search results")
 	flag.Parse()
 	//flagutil.SetFlagsFromEnv(flag.CommandLine, "TWITTER")
 
 	if flags.consumerKey == "" || flags.consumerSecret == "" {
 		log.Fatal("Application Access Token required")
+	}
+	if flags.term == "" {
+		log.Fatal("No search term provided")
 	}
 
 	// oauth2 configures a client that uses app credentials to keep a fresh token
@@ -44,16 +53,27 @@ func main() {
 	// example
 	// https://github.com/dghubble/go-twitter/blob/master/twitter/search.go
 	searchTweetParams := &twitter.SearchTweetParams{
-		Query:     "obama",
-		TweetMode: "extended",
-		Count:     5,
+		Query: flags.term,
+		// TweetMode: "extended",
+		Count: flags.records,
 	}
 
 	search, _, _ := client.Search.Tweets(searchTweetParams)
-	fmt.Printf("%+v\n", search.Statuses)
+	// Print all
+	// fmt.Printf("%+v\n", search.Statuses)
+
+	var re = regexp.MustCompile(`[^\w \s \d]`)
+
 	for _, res := range search.Statuses {
 		fmt.Printf("XXXXXXXXXXXXXXXX\n")
-		fmt.Printf("%s\n", res.FullText)
+		fmt.Printf("%s\n", res.Text)
+		clean := re.ReplaceAllString(res.Text, ` `)
+		fmt.Printf("%s\n", clean)
+		words := strings.Fields(clean)
+		for i, word := range words {
+			fmt.Printf("%d, %s\n", i, word)
+		}
+
 		// fmt.Printf("%+v\n", res)
 	}
 	//fmt.Printf("SEARCH TWEETS:\n%+v\n", search)
