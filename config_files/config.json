@@ -1,0 +1,7 @@
+{
+"User": "robin",
+"Key": "abc123",
+"MinLength": 4,
+"Users": ["UserA","UserB"],
+"Groups": ["GroupA"]
+}
